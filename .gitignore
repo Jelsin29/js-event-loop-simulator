@@ -1,0 +1,8 @@
+.claude/
+node_modules/
+dist/
+.vscode/
+.idea/
+*.js
+*.d.ts
+*.js.map
