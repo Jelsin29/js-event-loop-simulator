@@ -17,3 +17,6 @@ export type { ScriptOperation, Script, ExecutionStep, ExecutionStepTypeValue, Ev
 
 export { Visualizer } from './visualizer.js';
 export type { VisualizerOptions } from './visualizer.js';
+
+export { InputParser } from './parser.js';
+export { REPL } from './repl.js';

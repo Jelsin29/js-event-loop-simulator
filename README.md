@@ -1,6 +1,6 @@
 # JS Event Loop Simulator
 
-A visual simulator for JavaScript's execution model in TypeScript.
+A visual, interactive simulator for JavaScript's execution model in TypeScript.
 
 ## What It Demonstrates
 
@@ -22,16 +22,21 @@ src/
 ├── task-queue.ts    # MicrotaskQueue, MacrotaskQueue, TimerRegistry
 ├── event-loop.ts    # EventLoopEngine + Script DSL
 ├── visualizer.ts    # ASCII terminal output
-└── index.ts        # Exports
+├── parser.ts        # InputParser for REPL
+├── repl.ts          # Interactive REPL
+└── index.ts         # Exports
 
 tests/
 ├── call-stack.test.ts    # 20 tests
 ├── task-queue.test.ts    # 49 tests
 ├── event-loop.test.ts    # 30 tests
-└── visualizer.test.ts   # 25 tests
+├── visualizer.test.ts    # 25 tests
+├── parser.test.ts       # 20 tests
+└── repl.test.ts         # 14 tests
 
 demos/
-└── jake-archibald.ts    # Classic event loop demo
+├── jake-archibald.ts    # Classic event loop demo
+└── repl-demo.ts         # REPL demo
 ```
 
 ## Key Concepts
@@ -44,9 +49,30 @@ demos/
 ## Running
 
 ```bash
-make test        # Run all 124 tests
+make test        # Run all 158 tests
 make typecheck   # TypeScript check
 npx tsx demos/jake-archibald.ts  # Run demo
+```
+
+## Interactive REPL
+
+Try the interactive REPL to experiment yourself:
+
+```bash
+npx tsx src/repl.ts
+```
+
+Commands:
+- `.help` - Show help
+- `.state` - Show current execution state
+- `.reset` - Clear all state
+- `.exit` - Exit REPL
+
+Supported syntax:
+```
+> log("hello")
+> setTimeout(() => { log("fired") }, 100)
+> Promise.resolve().then(() => { log("done") })
 ```
 
 ## Milestones
@@ -57,5 +83,6 @@ npx tsx demos/jake-archibald.ts  # Run demo
 | 2. Task Queues | ✅ Done | 49 |
 | 3. Event Loop Engine | ✅ Done | 30 |
 | 4. Visualizer | ✅ Done | 25 |
+| 5. Interactive REPL | ✅ Done | 34 |
 
-**Total: 124 tests passing**
+**Total: 158 tests passing**
