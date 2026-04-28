@@ -2,25 +2,17 @@
 
 A visual simulator for JavaScript's execution model in TypeScript.
 
-## Status
+## What It Demonstrates
 
-**Milestones 1-3: Core Engine — DONE**
+Why `Promise.resolve().then()` ALWAYS runs before `setTimeout(..., 0)`:
 
-- **Milestone 1: Call Stack** — LIFO stack with push/pop/peek, overflow detection (20 tests)
-- **Milestone 2: Task Queues** — MicrotaskQueue (FIFO, drain-all), MacrotaskQueue (FIFO), TimerRegistry with virtual time (49 tests)
-- **Milestone 3: Event Loop Engine** — Orchestrates everything, correct microtask-before-macrotask ordering, step mode (30 tests)
-
-**Total: 99 tests passing**
-
-## What It Simulates
-
-The JavaScript event loop behavior:
-1. Execute synchronous script code
-2. When stack is empty, drain ALL microtasks (while loop!)
-3. Process one macrotask, then drain ALL microtasks again
-4. Repeat until queues are empty
-
-Shows exactly why `Promise.resolve().then()` runs before `setTimeout(..., 0)`.
+```
+script start     ← sync code runs first
+script end       ← sync code finishes
+promise1         ← microtask (priority queue!)
+promise2         ← another microtask (chained)
+timeout          ← macrotask (lower priority)
+```
 
 ## Architecture
 
@@ -29,22 +21,41 @@ src/
 ├── call-stack.ts    # LIFO stack for function frames
 ├── task-queue.ts    # MicrotaskQueue, MacrotaskQueue, TimerRegistry
 ├── event-loop.ts    # EventLoopEngine + Script DSL
+├── visualizer.ts    # ASCII terminal output
 └── index.ts        # Exports
 
 tests/
-├── call-stack.test.ts
-├── task-queue.test.ts
-└── event-loop.test.ts
+├── call-stack.test.ts    # 20 tests
+├── task-queue.test.ts    # 49 tests
+├── event-loop.test.ts    # 30 tests
+└── visualizer.test.ts   # 25 tests
+
+demos/
+└── jake-archibald.ts    # Classic event loop demo
 ```
 
-## Language
+## Key Concepts
 
-TypeScript (strict mode, ES2022, NodeNext)
+- **Call Stack**: LIFO — push on call, pop on return
+- **Microtask Queue**: FIFO, drains COMPLETELY before next macrotask (while loop!)
+- **Macrotask Queue**: FIFO — setTimeout, setInterval, I/O callbacks
+- **Event Loop**: sync → microtasks → macrotask → repeat
 
 ## Running
 
 ```bash
-make test      # Run all tests
-make typecheck # TypeScript check
-make start     # Run demo
+make test        # Run all 124 tests
+make typecheck   # TypeScript check
+npx tsx demos/jake-archibald.ts  # Run demo
 ```
+
+## Milestones
+
+| Milestone | Status | Tests |
+|-----------|--------|-------|
+| 1. Call Stack | ✅ Done | 20 |
+| 2. Task Queues | ✅ Done | 49 |
+| 3. Event Loop Engine | ✅ Done | 30 |
+| 4. Visualizer | ✅ Done | 25 |
+
+**Total: 124 tests passing**
