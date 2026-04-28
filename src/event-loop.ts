@@ -187,27 +187,15 @@ export class EventLoopEngine {
 
   /**
    * Get a snapshot of the current engine state.
+   * Note: after execute(), queues are drained so sizes are 0.
+   * Use during step mode to inspect mid-execution state.
    */
   getState(): EventLoopState {
-    // After execute(), everything is drained so sizes are 0
-    // During step mode, caller should check mid-execution state
-    // For timer count, we track it differently since TimerRegistry
-    // doesn't expose a count method
-    let timerCount = 0;
-    try {
-      // TimerRegistry doesn't have a size method, but we can check
-      // by trying advance(0) + due() — but that would consume timers.
-      // Instead, just report 0 since after execute they're all consumed.
-      timerCount = 0;
-    } catch {
-      timerCount = 0;
-    }
-
     return {
       callStackSize: this.callStack.size(),
       microtaskQueueSize: this.microtaskQueue.size(),
       macrotaskQueueSize: this.macrotaskQueue.size(),
-      timerCount,
+      timerCount: 0,
       stepsCount: this.steps.length,
     };
   }
