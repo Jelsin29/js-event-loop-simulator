@@ -21,11 +21,16 @@ export class Visualizer {
   /** Current step index for partial rendering. -1 means show all. */
   currentStepIndex: number;
 
+  /**
+   * Create a Visualizer from execution steps.
+   * @param steps - Array of ExecutionStep objects from engine.execute()
+   * @param options - Reserved for future use (timestamps, colors, etc.)
+   */
   constructor(steps: ExecutionStep[], options?: VisualizerOptions) {
     this.steps = [...steps];
     // -1 = show all steps (full execution view)
     this.currentStepIndex = -1;
-    // options reserved for future use (timestamps, colors, etc.)
+    // options reserved for future use
     void (options ?? {});
   }
 
@@ -42,15 +47,17 @@ export class Visualizer {
     return this.steps.slice(0, this.visibleCount);
   }
 
+  /** Advance to the next execution step (for step-by-step debugging) */
   nextStep(): void {
-    // First call from -1 (show all) → go to step 0
     if (this.currentStepIndex === -1) {
+      // First call from "show all" → go to step 0
       this.currentStepIndex = 0;
     } else if (this.currentStepIndex < this.steps.length - 1) {
       this.currentStepIndex += 1;
     }
   }
 
+  /** Jump to a specific step index. Negative values show all steps. */
   stepTo(index: number): void {
     if (index < 0) {
       this.currentStepIndex = -1;
@@ -59,10 +66,16 @@ export class Visualizer {
     }
   }
 
+  /** Reset to full execution view (show all steps) */
   reset(): void {
     this.currentStepIndex = -1;
   }
 
+  /**
+   * Render the call stack up to the current step.
+   * Shows function names stacked from bottom to top.
+   * Returns "(empty)" if no function calls are on the stack.
+   */
   renderCallStack(): string {
     const frames: string[] = [];
     let depth = 0;
@@ -89,6 +102,10 @@ export class Visualizer {
     return lines.join('\n');
   }
 
+  /**
+   * Render the microtask queue contents up to the current step.
+   * Shows names of scheduled microtasks in FIFO order.
+   */
   renderMicrotaskQueue(): string {
     const names: string[] = [];
 
@@ -104,6 +121,10 @@ export class Visualizer {
     return `Microtask Queue: [${names.join(', ')}]`;
   }
 
+  /**
+   * Render the macrotask queue contents up to the current step.
+   * Shows names of scheduled macrotasks in FIFO order.
+   */
   renderMacrotaskQueue(): string {
     const names: string[] = [];
 
@@ -119,6 +140,10 @@ export class Visualizer {
     return `Macrotask Queue: [${names.join(', ')}]`;
   }
 
+  /**
+   * Render active timers up to the current step.
+   * Shows setTimeout/setInterval with delay and remaining time.
+   */
   renderTimerRegistry(): string {
     const timers: string[] = [];
 
@@ -138,6 +163,10 @@ export class Visualizer {
     return `Timers: ${timers.join(', ')}`;
   }
 
+  /**
+   * Render the full execution log up to the current step.
+   * Each line shows: [index] type: name or [index] type: "value"
+   */
   renderExecutionLog(): string {
     const lines = ['=== Execution Log ==='];
     const stepTypeLabels: Record<string, string> = {
@@ -153,7 +182,6 @@ export class Visualizer {
     for (let i = 0; i < this.visibleCount && i < this.steps.length; i++) {
       const step = this.steps[i]!;
       const label = stepTypeLabels[step.type] ?? step.type;
-      // For log steps, show the value; for others, show just the name
       if (step.value !== undefined) {
         lines.push(`[${i}] ${label}: "${step.value}"`);
       } else {
@@ -164,6 +192,10 @@ export class Visualizer {
     return lines.join('\n');
   }
 
+  /**
+   * Render complete event loop state at the current step.
+   * Combines call stack, task queues, and timers.
+   */
   renderState(): string {
     const sections = [
       '=== Event Loop State ===',
