@@ -1,9 +1,9 @@
-.PHONY: test typecheck build start clean
+.PHONY: test test-watch typecheck build start clean
 
 test:
 	npx vitest run
 
-test:watch:
+test-watch:
 	npx vitest
 
 typecheck:
