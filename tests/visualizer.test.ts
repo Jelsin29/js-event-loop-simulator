@@ -249,6 +249,73 @@ describe('Visualizer', () => {
     });
   });
 
+  describe('edge cases', () => {
+    it('should handle deeply nested call stack', () => {
+      const steps = makeSteps([
+        { type: 'functionCall', name: 'main()' },
+        { type: 'functionCall', name: 'a()' },
+        { type: 'functionCall', name: 'b()' },
+        { type: 'functionCall', name: 'c()' },
+        { type: 'log', name: 'deep', value: 'deep' },
+      ]);
+      const viz = new Visualizer(steps);
+      const output = viz.renderCallStack();
+      expect(output).toContain('[0] main()');
+      expect(output).toContain('[1] a()');
+      expect(output).toContain('[2] b()');
+      expect(output).toContain('[3] c()');
+    });
+
+    it('should handle stepTo with negative index (show all)', () => {
+      const steps = makeSteps([
+        { type: 'log', name: 'a', value: 'a' },
+        { type: 'log', name: 'b', value: 'b' },
+      ]);
+      const viz = new Visualizer(steps);
+      viz.stepTo(0);
+      expect(viz.currentStepIndex).toBe(0);
+      // Only first step visible
+      expect(viz.renderExecutionLog()).toContain('[0]');
+      expect(viz.renderExecutionLog()).not.toContain('[1]');
+      // Negative index shows all
+      viz.stepTo(-1);
+      expect(viz.currentStepIndex).toBe(-1);
+      expect(viz.renderExecutionLog()).toContain('[1]');
+    });
+
+    it('should handle empty steps array', () => {
+      const viz = new Visualizer([]);
+      expect(viz.renderCallStack()).toContain('(empty)');
+      expect(viz.renderMicrotaskQueue()).toContain('(empty)');
+      expect(viz.renderMacrotaskQueue()).toContain('(empty)');
+      expect(viz.renderTimerRegistry()).toContain('(none)');
+      expect(viz.renderExecutionLog()).toContain('=== Execution Log ===');
+      // No step entries after header
+      const lines = viz.renderExecutionLog().split('\n');
+      expect(lines).toHaveLength(1);
+    });
+
+    it('should handle timer with non-zero delay', () => {
+      const steps = makeSteps([
+        { type: 'timerScheduled', name: 'delayed', details: { delay: 100, remaining: 50, isInterval: false } },
+      ]);
+      const viz = new Visualizer(steps);
+      const output = viz.renderTimerRegistry();
+      expect(output).toContain('setTimeout(100)');
+      expect(output).toContain('50ms remaining');
+    });
+
+    it('should handle setInterval timer', () => {
+      const steps = makeSteps([
+        { type: 'timerScheduled', name: 'interval', details: { delay: 1000, remaining: 500, isInterval: true } },
+      ]);
+      const viz = new Visualizer(steps);
+      const output = viz.renderTimerRegistry();
+      expect(output).toContain('setInterval(1000)');
+      expect(output).toContain('500ms remaining');
+    });
+  });
+
   describe('integration with engine', () => {
     it('should visualize the classic Jake Archibald example', () => {
       const engine = new EventLoopEngine();
