@@ -8,3 +8,6 @@
 
 export { CallStack, StackFrame, StackOverflowError, StackUnderflowError } from './call-stack';
 export type { StackFrameData } from './call-stack';
+
+export { MicrotaskQueue, MacrotaskQueue, TimerRegistry, QueueUnderflowError } from './task-queue';
+export type { MicrotaskCallback, MacrotaskCallback, Timer } from './task-queue';
