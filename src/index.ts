@@ -14,3 +14,6 @@ export type { MicrotaskCallback, MacrotaskCallback, Timer } from './task-queue.j
 
 export { EventLoopEngine, OperationType, ExecutionStepType } from './event-loop.js';
 export type { ScriptOperation, Script, ExecutionStep, ExecutionStepTypeValue, EventLoopState } from './event-loop.js';
+
+export { Visualizer } from './visualizer.js';
+export type { VisualizerOptions } from './visualizer.js';
