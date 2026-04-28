@@ -218,9 +218,7 @@ Type .help for commands, .exit to quit.
    * Cleanup resources
    */
   private cleanup(): void {
-    if (!this.rl.closed) {
-      this.rl.close();
-    }
+    this.rl.close();
   }
 }
 
