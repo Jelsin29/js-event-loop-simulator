@@ -6,8 +6,8 @@
  * and the event loop that orchestrates them all.
  */
 
-export { CallStack, StackFrame, StackOverflowError, StackUnderflowError } from './call-stack';
-export type { StackFrameData } from './call-stack';
+export { CallStack, StackFrame, StackOverflowError, StackUnderflowError } from './call-stack.js';
+export type { StackFrameData } from './call-stack.js';
 
-export { MicrotaskQueue, MacrotaskQueue, TimerRegistry, QueueUnderflowError } from './task-queue';
-export type { MicrotaskCallback, MacrotaskCallback, Timer } from './task-queue';
+export { MicrotaskQueue, MacrotaskQueue, TimerRegistry, QueueUnderflowError } from './task-queue.js';
+export type { MicrotaskCallback, MacrotaskCallback, Timer } from './task-queue.js';
